@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebTest Name="MainScenario" Id="bd38d427-d65e-488e-be07-be57661c4215" Owner="" Priority="2147483647" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="0" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="">
+  <Items>
+    <IncludedWebTest Name="LoadTest.MainScenarioCoded" Path="bin\debug\loadtest.dll" Id="3072cd01-9c96-e9d2-0982-f9105fe413d0" IsCodedWebTest="True" InheritWebTestSettings="False" />
+  </Items>
+</WebTest>
