@@ -9,7 +9,7 @@ namespace DotNetCore.Interfaces
     {
         Task InitializeDatabaseAsync(string databaseId, string collectionId);
 
-        Task<TModel> FetchItemAsync(string id);
+        Task<TModel> FetchItemAsync(string id, string partitionKey);
 
         Task<IEnumerable<TModel>> FetchItemsAsync();
 

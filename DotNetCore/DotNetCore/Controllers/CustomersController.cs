@@ -23,10 +23,10 @@ namespace DotNetCore.Controllers
             return await customerRepository.FetchItemsAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<Customer> Get(string id)
+        [HttpGet("{partitionKey}/{id}")]
+        public async Task<Customer> Get(string id, string partitionKey)
         {
-            return await customerRepository.FetchItemAsync(id);
+            return await customerRepository.FetchItemAsync(id, partitionKey);
         }
 
         [HttpPost]

@@ -67,6 +67,7 @@
     <Compile Include="LoadTestClient\ILoadTestClient.cs" />
     <Compile Include="LoadTestClient\LoadTestClient.cs" />
     <Compile Include="LoadTestClient\LoadTestClientExtensions.cs" />
+    <Compile Include="LoadTestClient\Models\Address.cs" />
     <Compile Include="LoadTestClient\Models\Customer.cs" />
     <Compile Include="LoadTestClient\Models\Order.cs" />
     <Compile Include="LoadTestClient\Models\OrderItem.cs" />

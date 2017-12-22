@@ -21,13 +21,13 @@ namespace LoadTest.Models
         /// <summary>
         /// Initializes a new instance of the Customer class.
         /// </summary>
-        public Customer(string id = default(string), string firstName = default(string), string lastName = default(string), DateTime? birthDate = default(DateTime?), string zipCode = default(string), IList<Order> orders = default(IList<Order>))
+        public Customer(string id = default(string), string firstName = default(string), string lastName = default(string), DateTime? birthDate = default(DateTime?), Address address = default(Address), IList<Order> orders = default(IList<Order>))
         {
             Id = id;
             FirstName = firstName;
             LastName = lastName;
             BirthDate = birthDate;
-            ZipCode = zipCode;
+            Address = address;
             Orders = orders;
         }
 
@@ -53,8 +53,8 @@ namespace LoadTest.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "zipCode")]
-        public string ZipCode { get; set; }
+        [JsonProperty(PropertyName = "address")]
+        public Address Address { get; set; }
 
         /// <summary>
         /// </summary>

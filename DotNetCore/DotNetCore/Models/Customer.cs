@@ -18,8 +18,8 @@ namespace DotNetCore.Models
         [JsonProperty("birthDate")]
         public DateTime BirthDate { get; set; }
 
-        [JsonProperty("zipCode")]
-        public string ZipCode { get; set; }
+        [JsonProperty("address")]
+        public Address Address { get; set; }
 
         [JsonProperty("orders")]
         public IEnumerable<Order> Orders { get; set; }

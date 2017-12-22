@@ -3,6 +3,7 @@ using DotNetCore.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,11 @@ namespace DotNetCore.Repositories
         where TModel : class
     {
         readonly IDocumentClient documentClient;
+        readonly ILogger<DataRepository<TModel>> logger;
         public string DatabaseId { get; private set; }
         public string CollectionId { get; private set; }
 
-        public DataRepository(IOptions<DocumentSettings> options)
+        public DataRepository(IOptions<DocumentSettings> options, ILogger<DataRepository<TModel>> logger)
         {
             var settings = options.Value;
             var connectionPolicy = new ConnectionPolicy()
@@ -34,6 +36,7 @@ namespace DotNetCore.Repositories
             CollectionId = settings.CollectionId;
 
             documentClient = new DocumentClient(settings.DocumentEndpoint, settings.DocumentKey, connectionPolicy);
+            this.logger = logger;
         }
 
         public async Task InitializeDatabaseAsync(string databaseId, string collectionId)
@@ -44,11 +47,12 @@ namespace DotNetCore.Repositories
             await CreateCollectionIfNotExistsAsync(databaseId, collectionId);
         }
 
-        public async Task<TModel> FetchItemAsync(string id)
+        public async Task<TModel> FetchItemAsync(string id, string partitionKey)
         {
             var documentUri = UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id);
-            var document = await documentClient.ReadDocumentAsync(documentUri);
-            return document as TModel;
+            var resourceResponse = await documentClient.ReadDocumentAsync(documentUri, new RequestOptions() { PartitionKey = new PartitionKey(partitionKey) });
+            logger.LogDebug($"Read cost (in RU/s) : {resourceResponse.RequestCharge}");
+            return (TModel)((dynamic)resourceResponse.Resource);
         }
 
         public async Task<IEnumerable<TModel>> FetchItemsAsync()
@@ -83,22 +87,25 @@ namespace DotNetCore.Repositories
         public async Task<TModel> CreateItemAsync(TModel item)
         {
             var documentUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
-            var model = await documentClient.CreateDocumentAsync(documentUri, item);
-            return model as TModel;
+            var resourceResponse = await documentClient.CreateDocumentAsync(documentUri, item);
+            logger.LogDebug($"Create cost (in RU/s) : {resourceResponse.RequestCharge}");
+            return (TModel)((dynamic)resourceResponse.Resource);
         }
 
         public async Task<TModel> CreateItemIfNotExistsAsync(TModel item)
         {
             var documentUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
-            var model = await documentClient.UpsertDocumentAsync(documentUri, item);
-            return model as TModel;
+            var resourceResponse = await documentClient.UpsertDocumentAsync(documentUri, item);
+            logger.LogDebug($"Upsert cost (in RU/s) : {resourceResponse.RequestCharge}");
+            return (TModel)((dynamic)resourceResponse.Resource);
         }
 
         public async Task<TModel> UpdateItemAsync(string id, TModel item)
         {
             var documentUri = UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id);
-            var model = await documentClient.ReplaceDocumentAsync(documentUri, item);
-            return model as TModel;
+            var resourceResponse = await documentClient.ReplaceDocumentAsync(documentUri, item);
+            logger.LogDebug($"Replace cost (in RU/s) : {resourceResponse.RequestCharge}");
+            return (TModel)((dynamic)resourceResponse.Resource);
         }
 
         public async Task DeleteItemAsync(string id)

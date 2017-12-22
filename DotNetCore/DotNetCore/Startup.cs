@@ -26,6 +26,8 @@ namespace DotNetCore
             services.AddOptions();
             services.Configure<DocumentSettings>(Configuration.GetSection("Configuration"));
 
+            services.AddLogging();
+
             services.AddSingleton<IDocumentClient, DocumentClient>();
             services.AddSingleton<IDataRepository<Customer>, DataRepository<Customer>>();
 
@@ -48,7 +50,6 @@ namespace DotNetCore
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Api");
             });
-
 
             if (env.IsDevelopment())
             {
