@@ -20,20 +20,24 @@ namespace LoadTest
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static IList<Customer> ApiCustomersGet(this ILoadTestClient operations)
+            /// <param name='partitionKey'>
+            /// </param>
+            public static IList<Customer> ApiCustomersGet(this ILoadTestClient operations, string partitionKey = default(string))
             {
-                return Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersGetAsync(), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                return Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersGetAsync(partitionKey), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
+            /// <param name='partitionKey'>
+            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<Customer>> ApiCustomersGetAsync(this ILoadTestClient operations, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<Customer>> ApiCustomersGetAsync(this ILoadTestClient operations, string partitionKey = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.ApiCustomersGetWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiCustomersGetWithHttpMessagesAsync(partitionKey, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -65,24 +69,28 @@ namespace LoadTest
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
+            /// <param name='partitionKey'>
+            /// </param>
             /// <param name='id'>
             /// </param>
-            public static Customer ApiCustomersByIdGet(this ILoadTestClient operations, string id)
+            public static Customer ApiCustomersByPartitionKeyByIdGet(this ILoadTestClient operations, string partitionKey, string id)
             {
-                return Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersByIdGetAsync(id), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                return Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersByPartitionKeyByIdGetAsync(partitionKey, id), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
             /// The operations group for this extension method.
+            /// </param>
+            /// <param name='partitionKey'>
             /// </param>
             /// <param name='id'>
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<Customer> ApiCustomersByIdGetAsync(this ILoadTestClient operations, string id, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<Customer> ApiCustomersByPartitionKeyByIdGetAsync(this ILoadTestClient operations, string partitionKey, string id, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.ApiCustomersByIdGetWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ApiCustomersByPartitionKeyByIdGetWithHttpMessagesAsync(partitionKey, id, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -120,9 +128,11 @@ namespace LoadTest
             /// </param>
             /// <param name='id'>
             /// </param>
-            public static void ApiCustomersByIdDelete(this ILoadTestClient operations, string id)
+            /// <param name='partitionKey'>
+            /// </param>
+            public static void ApiCustomersByIdDelete(this ILoadTestClient operations, string id, string partitionKey = default(string))
             {
-                Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersByIdDeleteAsync(id), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+                Task.Factory.StartNew(s => ((ILoadTestClient)s).ApiCustomersByIdDeleteAsync(id, partitionKey), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -130,12 +140,14 @@ namespace LoadTest
             /// </param>
             /// <param name='id'>
             /// </param>
+            /// <param name='partitionKey'>
+            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task ApiCustomersByIdDeleteAsync(this ILoadTestClient operations, string id, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task ApiCustomersByIdDeleteAsync(this ILoadTestClient operations, string id, string partitionKey = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                await operations.ApiCustomersByIdDeleteWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false);
+                await operations.ApiCustomersByIdDeleteWithHttpMessagesAsync(id, partitionKey, null, cancellationToken).ConfigureAwait(false);
             }
 
             /// <param name='operations'>

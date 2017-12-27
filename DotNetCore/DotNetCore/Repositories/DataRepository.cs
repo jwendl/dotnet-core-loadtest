@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 
 namespace DotNetCore.Repositories
 {
-    public class DataRepository<TModel>
-        : IDataRepository<TModel>
+    public class DataRepository<TKey, TModel>
+        : IDataRepository<TKey, TModel>
         where TModel : class
     {
         readonly IDocumentClient documentClient;
-        readonly ILogger<DataRepository<TModel>> logger;
+        readonly ILogger<DataRepository<TKey, TModel>> logger;
         public string DatabaseId { get; private set; }
         public string CollectionId { get; private set; }
 
-        public DataRepository(IOptions<DocumentSettings> options, ILogger<DataRepository<TModel>> logger)
+        public DataRepository(IOptions<DocumentSettings> options, ILogger<DataRepository<TKey, TModel>> logger)
         {
             var settings = options.Value;
             var connectionPolicy = new ConnectionPolicy()
@@ -39,25 +39,25 @@ namespace DotNetCore.Repositories
             this.logger = logger;
         }
 
-        public async Task InitializeDatabaseAsync(string databaseId, string collectionId)
+        public async Task InitializeDatabaseAsync(string partitionKeyPath, string databaseId, string collectionId)
         {
             DatabaseId = databaseId;
             CollectionId = collectionId;
             await CreateDatabaseIfNotExistsAsync(databaseId);
-            await CreateCollectionIfNotExistsAsync(databaseId, collectionId);
+            await CreateCollectionIfNotExistsAsync(partitionKeyPath, databaseId, collectionId);
         }
 
-        public async Task<TModel> FetchItemAsync(string id, string partitionKey)
+        public async Task<TModel> FetchItemAsync(TKey partitionKey, string id)
         {
             var documentUri = UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id);
-            var resourceResponse = await documentClient.ReadDocumentAsync(documentUri, new RequestOptions() { PartitionKey = new PartitionKey(partitionKey) });
+            var resourceResponse = await documentClient.ReadDocumentAsync(documentUri, BuildRequestOptions(partitionKey));
             logger.LogDebug($"Read cost (in RU/s) : {resourceResponse.RequestCharge}");
             return (TModel)((dynamic)resourceResponse.Resource);
         }
 
-        public async Task<IEnumerable<TModel>> FetchItemsAsync()
+        public async Task<IEnumerable<TModel>> FetchItemsAsync(TKey partitionKey)
         {
-            var documentQuery = documentClient.CreateDocumentQuery<TModel>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), new FeedOptions { MaxItemCount = -1 })
+            var documentQuery = documentClient.CreateDocumentQuery<TModel>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), BuildFeedOptions(partitionKey, -1))
                 .AsDocumentQuery();
 
             var results = new List<TModel>();
@@ -69,9 +69,9 @@ namespace DotNetCore.Repositories
             return results;
         }
 
-        public async Task<IEnumerable<TModel>> FindItemsAsync(Expression<Func<TModel, bool>> predicate)
+        public async Task<IEnumerable<TModel>> FindItemsAsync(TKey partitionKey, Expression<Func<TModel, bool>> predicate)
         {
-            var documentQuery = documentClient.CreateDocumentQuery<TModel>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), new FeedOptions { MaxItemCount = -1 })
+            var documentQuery = documentClient.CreateDocumentQuery<TModel>(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), BuildFeedOptions(partitionKey, -1))
                 .Where(predicate)
                 .AsDocumentQuery();
 
@@ -84,34 +84,53 @@ namespace DotNetCore.Repositories
             return results;
         }
 
-        public async Task<TModel> CreateItemAsync(TModel item)
+        public async Task<TModel> CreateItemAsync(TKey partitionKey, TModel item)
         {
             var documentUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
-            var resourceResponse = await documentClient.CreateDocumentAsync(documentUri, item);
+            var resourceResponse = await documentClient.CreateDocumentAsync(documentUri, item, BuildRequestOptions(partitionKey));
             logger.LogDebug($"Create cost (in RU/s) : {resourceResponse.RequestCharge}");
             return (TModel)((dynamic)resourceResponse.Resource);
         }
 
-        public async Task<TModel> CreateItemIfNotExistsAsync(TModel item)
+        public async Task<TModel> CreateItemIfNotExistsAsync(TKey partitionKey, TModel item)
         {
             var documentUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
-            var resourceResponse = await documentClient.UpsertDocumentAsync(documentUri, item);
+            var resourceResponse = await documentClient.UpsertDocumentAsync(documentUri, item, BuildRequestOptions(partitionKey));
             logger.LogDebug($"Upsert cost (in RU/s) : {resourceResponse.RequestCharge}");
             return (TModel)((dynamic)resourceResponse.Resource);
         }
 
-        public async Task<TModel> UpdateItemAsync(string id, TModel item)
+        public async Task<TModel> UpdateItemAsync(TKey partitionKey, string id, TModel item)
         {
             var documentUri = UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id);
-            var resourceResponse = await documentClient.ReplaceDocumentAsync(documentUri, item);
+            var resourceResponse = await documentClient.ReplaceDocumentAsync(documentUri, item, BuildRequestOptions(partitionKey));
             logger.LogDebug($"Replace cost (in RU/s) : {resourceResponse.RequestCharge}");
             return (TModel)((dynamic)resourceResponse.Resource);
         }
 
-        public async Task DeleteItemAsync(string id)
+        public async Task DeleteItemAsync(TKey partitionKey, string id)
         {
             var documentUri = UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id);
-            await documentClient.DeleteDocumentAsync(documentUri);
+            await documentClient.DeleteDocumentAsync(documentUri, BuildRequestOptions(partitionKey));
+        }
+
+        private RequestOptions BuildRequestOptions(TKey partitionKey)
+        {
+            var requestParitionKey = new PartitionKey(partitionKey);
+            return new RequestOptions()
+            {
+                PartitionKey = requestParitionKey,
+            };
+        }
+
+        private FeedOptions BuildFeedOptions(TKey partitionKey, int maxItemCount)
+        {
+            var feedPartitionKey = new PartitionKey(partitionKey);
+            return new FeedOptions()
+            {
+                MaxItemCount = maxItemCount,
+                PartitionKey = feedPartitionKey,
+            };
         }
 
         private async Task CreateDatabaseIfNotExistsAsync(string databaseId)
@@ -133,7 +152,7 @@ namespace DotNetCore.Repositories
             }
         }
 
-        private async Task CreateCollectionIfNotExistsAsync(string databaseId, string collectionId)
+        private async Task CreateCollectionIfNotExistsAsync(string partitionKeyPath, string databaseId, string collectionId)
         {
             try
             {
@@ -143,7 +162,9 @@ namespace DotNetCore.Repositories
             {
                 if (documentClientException.StatusCode == HttpStatusCode.NotFound)
                 {
-                    await documentClient.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri(databaseId), new DocumentCollection { Id = collectionId }, new RequestOptions { OfferThroughput = 1000 });
+                    var documentCollection = new DocumentCollection { Id = collectionId };
+                    documentCollection.PartitionKey.Paths.Add(partitionKeyPath);
+                    await documentClient.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri(databaseId), documentCollection, new RequestOptions { OfferThroughput = 1000 });
                 }
                 else
                 {

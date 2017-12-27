@@ -39,13 +39,15 @@ namespace LoadTest
         ServiceClientCredentials Credentials { get; }
 
 
-            /// <param name='customHeaders'>
+            /// <param name='partitionKey'>
+        /// </param>
+        /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<IList<Customer>>> ApiCustomersGetWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<IList<Customer>>> ApiCustomersGetWithHttpMessagesAsync(string partitionKey = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='customer'>
         /// </param>
@@ -57,6 +59,8 @@ namespace LoadTest
         /// </param>
         Task<HttpOperationResponse> ApiCustomersPostWithHttpMessagesAsync(Customer customer = default(Customer), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <param name='partitionKey'>
+        /// </param>
         /// <param name='id'>
         /// </param>
         /// <param name='customHeaders'>
@@ -65,7 +69,7 @@ namespace LoadTest
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<Customer>> ApiCustomersByIdGetWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<Customer>> ApiCustomersByPartitionKeyByIdGetWithHttpMessagesAsync(string partitionKey, string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='id'>
         /// </param>
@@ -81,13 +85,15 @@ namespace LoadTest
 
         /// <param name='id'>
         /// </param>
+        /// <param name='partitionKey'>
+        /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse> ApiCustomersByIdDeleteWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse> ApiCustomersByIdDeleteWithHttpMessagesAsync(string id, string partitionKey = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='customHeaders'>
         /// The headers that will be added to request.

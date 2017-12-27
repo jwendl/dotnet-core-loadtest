@@ -29,7 +29,7 @@ namespace DotNetCore
             services.AddLogging();
 
             services.AddSingleton<IDocumentClient, DocumentClient>();
-            services.AddSingleton<IDataRepository<Customer>, DataRepository<Customer>>();
+            services.AddSingleton<IDataRepository<string, Customer>, DataRepository<string, Customer>>();
 
             services.AddSwaggerGen(c =>
             {

@@ -253,6 +253,8 @@ namespace LoadTest
             };
             CustomInitialize();
         }    
+        /// <param name='partitionKey'>
+        /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
@@ -262,7 +264,7 @@ namespace LoadTest
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<IList<Customer>>> ApiCustomersGetWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<IList<Customer>>> ApiCustomersGetWithHttpMessagesAsync(string partitionKey = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -271,12 +273,22 @@ namespace LoadTest
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("partitionKey", partitionKey);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "ApiCustomersGet", tracingParameters);
             }
             // Construct URL
             var _baseUrl = this.BaseUri.AbsoluteUri;
             var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/Customers").ToString();
+            List<string> _queryParameters = new List<string>();
+            if (partitionKey != null)
+            {
+                _queryParameters.Add(string.Format("partitionKey={0}", Uri.EscapeDataString(partitionKey)));
+            }
+            if (_queryParameters.Count > 0)
+            {
+                _url += "?" + string.Join("&", _queryParameters);
+            }
             // Create HTTP transport objects
             HttpRequestMessage _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
@@ -464,6 +476,8 @@ namespace LoadTest
             return _result;
         }
 
+        /// <param name='partitionKey'>
+        /// </param>
         /// <param name='id'>
         /// </param>
         /// <param name='customHeaders'>
@@ -475,8 +489,12 @@ namespace LoadTest
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<Customer>> ApiCustomersByIdGetWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<Customer>> ApiCustomersByPartitionKeyByIdGetWithHttpMessagesAsync(string partitionKey, string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (partitionKey == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "partitionKey");
+            }
             if (id == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "id");
@@ -488,13 +506,15 @@ namespace LoadTest
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("partitionKey", partitionKey);
                 tracingParameters.Add("id", id);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "ApiCustomersByIdGet", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, "ApiCustomersByPartitionKeyByIdGet", tracingParameters);
             }
             // Construct URL
             var _baseUrl = this.BaseUri.AbsoluteUri;
-            var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/Customers/{id}").ToString();
+            var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/Customers/{partitionKey}/{id}").ToString();
+            _url = _url.Replace("{partitionKey}", Uri.EscapeDataString(partitionKey));
             _url = _url.Replace("{id}", Uri.EscapeDataString(id));
             // Create HTTP transport objects
             HttpRequestMessage _httpRequest = new HttpRequestMessage();
@@ -693,6 +713,8 @@ namespace LoadTest
 
         /// <param name='id'>
         /// </param>
+        /// <param name='partitionKey'>
+        /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
@@ -702,7 +724,7 @@ namespace LoadTest
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse> ApiCustomersByIdDeleteWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse> ApiCustomersByIdDeleteWithHttpMessagesAsync(string id, string partitionKey = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (id == null)
             {
@@ -715,6 +737,7 @@ namespace LoadTest
             {
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("partitionKey", partitionKey);
                 tracingParameters.Add("id", id);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "ApiCustomersByIdDelete", tracingParameters);
@@ -723,6 +746,15 @@ namespace LoadTest
             var _baseUrl = this.BaseUri.AbsoluteUri;
             var _url = new Uri(new Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/Customers/{id}").ToString();
             _url = _url.Replace("{id}", Uri.EscapeDataString(id));
+            List<string> _queryParameters = new List<string>();
+            if (partitionKey != null)
+            {
+                _queryParameters.Add(string.Format("partitionKey={0}", Uri.EscapeDataString(partitionKey)));
+            }
+            if (_queryParameters.Count > 0)
+            {
+                _url += "?" + string.Join("&", _queryParameters);
+            }
             // Create HTTP transport objects
             HttpRequestMessage _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;

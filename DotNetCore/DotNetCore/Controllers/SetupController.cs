@@ -11,9 +11,9 @@ namespace DotNetCore.Controllers
         : Controller
     {
         private readonly DocumentSettings documentSettings;
-        private readonly IDataRepository<Customer> customerRepository;
+        private readonly IDataRepository<string, Customer> customerRepository;
 
-        public SetupController(IOptions<DocumentSettings> options, IDataRepository<Customer> customerRepository)
+        public SetupController(IOptions<DocumentSettings> options, IDataRepository<string, Customer> customerRepository)
         {
             documentSettings = options.Value;
             this.customerRepository = customerRepository;
@@ -22,7 +22,7 @@ namespace DotNetCore.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            await customerRepository.InitializeDatabaseAsync(documentSettings.DatabaseId, documentSettings.CollectionId);
+            await customerRepository.InitializeDatabaseAsync("/address/state", documentSettings.DatabaseId, documentSettings.CollectionId);
 
             return Ok();
         }

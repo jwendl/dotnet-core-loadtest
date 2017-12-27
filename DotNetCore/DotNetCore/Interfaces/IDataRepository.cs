@@ -5,22 +5,22 @@ using System.Threading.Tasks;
 
 namespace DotNetCore.Interfaces
 {
-    public interface IDataRepository<TModel>
+    public interface IDataRepository<TKey, TModel>
     {
-        Task InitializeDatabaseAsync(string databaseId, string collectionId);
+        Task InitializeDatabaseAsync(string partitionKeyPath, string databaseId, string collectionId);
 
-        Task<TModel> FetchItemAsync(string id, string partitionKey);
+        Task<TModel> FetchItemAsync(TKey partitionKey, string id);
 
-        Task<IEnumerable<TModel>> FetchItemsAsync();
+        Task<IEnumerable<TModel>> FetchItemsAsync(TKey partitionKey);
 
-        Task<IEnumerable<TModel>> FindItemsAsync(Expression<Func<TModel, bool>> predicate);
+        Task<IEnumerable<TModel>> FindItemsAsync(TKey partitionKey, Expression<Func<TModel, bool>> predicate);
 
-        Task<TModel> CreateItemAsync(TModel item);
+        Task<TModel> CreateItemAsync(TKey partitionKey, TModel item);
 
-        Task<TModel> CreateItemIfNotExistsAsync(TModel item);
+        Task<TModel> CreateItemIfNotExistsAsync(TKey partitionKey, TModel item);
 
-        Task<TModel> UpdateItemAsync(string id, TModel item);
+        Task<TModel> UpdateItemAsync(TKey partitionKey, string id, TModel item);
 
-        Task DeleteItemAsync(string id);
+        Task DeleteItemAsync(TKey partitionKey, string id);
     }
 }
