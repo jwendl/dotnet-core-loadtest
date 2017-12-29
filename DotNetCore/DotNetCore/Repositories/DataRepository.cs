@@ -28,6 +28,7 @@ namespace DotNetCore.Repositories
             var settings = options.Value;
             var connectionPolicy = new ConnectionPolicy()
             {
+                MaxConnectionLimit = 1000,
                 ConnectionMode = ConnectionMode.Direct,
                 ConnectionProtocol = Protocol.Tcp
             };
@@ -164,7 +165,7 @@ namespace DotNetCore.Repositories
                 {
                     var documentCollection = new DocumentCollection { Id = collectionId };
                     documentCollection.PartitionKey.Paths.Add(partitionKeyPath);
-                    await documentClient.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri(databaseId), documentCollection, new RequestOptions { OfferThroughput = 1000 });
+                    await documentClient.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri(databaseId), documentCollection, new RequestOptions { OfferThroughput = 5000 });
                 }
                 else
                 {
