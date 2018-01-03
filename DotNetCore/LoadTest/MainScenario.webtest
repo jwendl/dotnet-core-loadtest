@@ -2,5 +2,6 @@
 <WebTest Name="MainScenario" Id="bd38d427-d65e-488e-be07-be57661c4215" Owner="" Priority="2147483647" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="0" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="">
   <Items>
     <IncludedWebTest Name="LoadTest.WebTests.CreateWebTest" Path="bin\debug\loadtest.dll" Id="2e14f5a3-fda4-85aa-83f8-ebc64b1000c8" IsCodedWebTest="True" InheritWebTestSettings="False" />
+    <IncludedWebTest Name="LoadTest.WebTests.ReadWebTest" Path="bin\debug\loadtest.dll" Id="3cb2f8b6-0838-1994-a3e8-8cbbb54d249d" IsCodedWebTest="True" InheritWebTestSettings="False" />
   </Items>
 </WebTest>

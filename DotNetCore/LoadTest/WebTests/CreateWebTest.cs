@@ -1,27 +1,55 @@
 ﻿using Bogus;
 using LoadTest.Models;
 using Microsoft.VisualStudio.TestTools.WebTesting;
+using Microsoft.VisualStudio.TestTools.WebTesting.Rules;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using Order = LoadTest.Models.Order;
 
 namespace LoadTest.WebTests
 {
     public class CreateWebTest
         : WebTest
     {
+        private readonly Lazy<ConnectionMultiplexer> lazyConnection;
+
         public CreateWebTest()
         {
+            lazyConnection = new Lazy<ConnectionMultiplexer>(() =>
+            {
+                return ConnectionMultiplexer.Connect("jwdotnetcache.redis.cache.windows.net:6380,password=cxJ/LWPMTH5M967HLQxDIopeormW2yNQJnTn9KBs8IA=,ssl=True,abortConnect=False");
+            });
+
             PreAuthenticate = true;
             Proxy = "default";
         }
 
         public override IEnumerator<WebTestRequest> GetRequestEnumerator()
         {
+            if (Context.ValidationLevel >= ValidationLevel.High)
+            {
+                var responseTimeValidationRule = new ValidationRuleRequestTime()
+                {
+                    MaxRequestTime = 1000,
+                };
+
+                ValidateResponse += new EventHandler<ValidationEventArgs>(responseTimeValidationRule.Validate);
+
+                var responseTimeThresholdValidationRule = new ValidationRuleResponseTimeGoal()
+                {
+                    Tolerance = 15D,
+                };
+
+                ValidateResponseOnPageComplete += new EventHandler<ValidationEventArgs>(responseTimeThresholdValidationRule.Validate);
+            }
+
             var webTestRequest = new WebTestRequest("http://jwdotnetcore.azurewebsites.net/api/customers")
             {
                 Method = "POST"
             };
+            webTestRequest.PostRequest += WebTestRequest_PostRequest;
 
             var orderItem = new Faker<OrderItem>()
                 .RuleFor(oi => oi.SerialNumber, p => p.Finance.Iban())
@@ -70,6 +98,17 @@ namespace LoadTest.WebTests
 
             yield return webTestRequest;
             webTestRequest = null;
+        }
+
+        private async void WebTestRequest_PostRequest(object sender, PostRequestEventArgs e)
+        {
+            var connection = lazyConnection.Value;
+            var redisCache = connection.GetDatabase();
+
+            var json = e.Response.BodyString;
+            var customer = JsonConvert.DeserializeObject<Customer>(json);
+
+            await redisCache.StringSetAsync(customer.Id, customer.Address.State);
         }
     }
 }
