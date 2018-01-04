@@ -3,10 +3,11 @@
   <Scenarios>
     <Scenario Name="Main Load Test" DelayBetweenIterations="0" PercentNewUsers="0" IPSwitching="false" TestMixType="PercentageOfTestsStarted" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
-      <LoadProfile Pattern="Constant" InitialUsers="500" />
+      <LoadProfile Pattern="Constant" InitialUsers="250" />
       <TestMix>
-        <TestProfile Name="CreateWebTest" Path="bin\debug\loadtest.dll" Id="2e14f5a3-fda4-85aa-83f8-ebc64b1000c8" Percentage="75" Type="Microsoft.VisualStudio.TestTools.WebStress.CodedWebTestElement, Microsoft.VisualStudio.QualityTools.LoadTest, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="ReadWebTest" Path="bin\debug\loadtest.dll" Id="3cb2f8b6-0838-1994-a3e8-8cbbb54d249d" Percentage="25" Type="Microsoft.VisualStudio.TestTools.WebStress.CodedWebTestElement, Microsoft.VisualStudio.QualityTools.LoadTest, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="CreateWebTest" Path="bin\debug\loadtest.dll" Id="2e14f5a3-fda4-85aa-83f8-ebc64b1000c8" Percentage="25" Type="Microsoft.VisualStudio.TestTools.WebStress.CodedWebTestElement, Microsoft.VisualStudio.QualityTools.LoadTest, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="ReadWebTest" Path="bin\debug\loadtest.dll" Id="3cb2f8b6-0838-1994-a3e8-8cbbb54d249d" Percentage="50" Type="Microsoft.VisualStudio.TestTools.WebStress.CodedWebTestElement, Microsoft.VisualStudio.QualityTools.LoadTest, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="UpdateWebTest" Path="bin\debug\loadtest.dll" Id="9f63e2a9-4401-d4df-06bf-d7e526d40af6" Percentage="25" Type="Microsoft.VisualStudio.TestTools.WebStress.CodedWebTestElement, Microsoft.VisualStudio.QualityTools.LoadTest, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <BrowserMix>
         <BrowserProfile Percentage="100">

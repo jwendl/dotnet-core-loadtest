@@ -47,7 +47,7 @@ namespace LoadTest.WebTests
 
             var webTestRequest = new WebTestRequest("http://jwdotnetcore.azurewebsites.net/api/customers")
             {
-                Method = "POST"
+                Method = "POST",
             };
             webTestRequest.PostRequest += WebTestRequest_PostRequest;
 

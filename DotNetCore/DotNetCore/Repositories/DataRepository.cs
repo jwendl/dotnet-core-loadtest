@@ -28,7 +28,6 @@ namespace DotNetCore.Repositories
             var settings = options.Value;
             var connectionPolicy = new ConnectionPolicy()
             {
-                MaxConnectionLimit = 1000,
                 ConnectionMode = ConnectionMode.Direct,
                 ConnectionProtocol = Protocol.Tcp
             };
